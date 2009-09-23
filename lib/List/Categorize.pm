@@ -12,7 +12,7 @@ use warnings;
 
 use base 'Exporter';
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 our @EXPORT = qw();
 our @EXPORT_OK = qw(
     categorize
@@ -66,7 +66,7 @@ sub categorize (&@)
         # Execute the categorizer subroutine to determine the category
         # for this element.
         #
-        my $category = &$coderef;
+        my $category = $coderef->();
 
         # If a category was returned, use it as a key in the %sublists
         # hash, and add the current element to the list referenced by

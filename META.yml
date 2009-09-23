@@ -12,4 +12,4 @@ requires:
   Test::Deep: 0
   Test::More: 0
   Test::NoWarnings: 0
-version: 0.01
+version: 0.03

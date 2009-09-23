@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::Deep;
 use Test::NoWarnings;
 
@@ -64,6 +64,7 @@ test_empty_list();
 test_sublist_element_transform();
 test_collapsing_sublist_element_transform();
 test_ignored_elements();
+test_categorizer_args();
 
 # Test::NoWarnings automatically inserts an additional test
 # that makes sure no warnings were emitted during testing.
@@ -491,7 +492,7 @@ sub test_collapsing_sublist_element_transform
    } @sample_data;
 
    cmp_deeply(\%sublists, \%expected,
-       'collapsed sublist elements collapses hashref elements'
+       'Collapsed sublist elements collapses hashref elements'
    );
 }
 
@@ -543,7 +544,36 @@ sub test_ignored_elements
     } ( -5 .. 5 );
 
     cmp_deeply(\%sublists_with_false_keys, \%expected_with_false_keys,
-        'Ignored elements, with empty strings as legal hash keys');
+        'Ignored elements, with empty strings as legal hash keys'
+    );
+}
+
+
+sub test_categorizer_args
+#
+# Make sure that the categorizer subroutine can safely
+# change @_ without affecting the @_ of categorize() itself.
+#
+# This is a fix for a bug reported by Johan Lodin:
+# http://rt.cpan.org/Public/Bug/Display.html?id=49910
+#
+{
+    my %expected = ( a => [0], b => [1], c => [2] );
+
+    my %sublists = categorize {
+
+        # If this affects the categorize() @_ array, then %sublists
+        # won't be correct.
+        #
+        @_ = ();
+
+        chr( ord('a') + $_ );
+
+    } ( 0 .. 2 );
+
+    cmp_deeply(\%sublists, \%expected,
+        'Changing @_ in categorizer has no effect'
+    );
 }
 
 # end categorize.t
